@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Speedtest overview</title>
+    <style media="screen">
+      @import url('https://fonts.googleapis.com/css?family=Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i');
+      * {
+      	padding: 0;
+      	margin: 0;
+      	box-sizing: border-box;
+      }
+
+      body {
+      	background-color: #fff;
+      	font-family: 'Montserrat', sans-serif;
+      	box-sizing: border-box;
+      	outline-color: #ccc !important;
+      	max-width: 100vw;
+      	overflow: hidden;
+        padding: 10px;
+        text-align: center;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      .speedtests {
+        margin: auto;
+      }
+
+      .speedtest {
+        padding: 10px;
+      }
+
+      .speedtest td {
+        padding: 5px 10px;
+      }
+
+      button {
+        display: block;
+        background: transparent;
+        font-size: 20px;
+        font-weight: 600;
+        border: 2px solid #3498db;
+        color: #3498db;
+        border-radius: 999px;
+        padding: 10px 20px;
+        margin: 20px auto;
+        transition: all .3s ease-out;
+        cursor: pointer;
+        outline: none !important;
+      }
+
+      button:hover {
+        background: #3498db;
+        color: #fff;
+      }
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Speedtest overview</h1>
+      <p>Average ping: <span id="avg-ping"></span></p>
+      <p>Average download: <span id="avg-down"></span></p>
+      <p>Average upload: <span id="avg-up"></span></p>
+      <button id="run-speedtest">Run speedtest</button>
+    </div>
+
+
+
+    <h1>Speedtest speedtests</h1>
+    <table id="speedtests" class="speedtests">
+
+    </table>
+
+    <script type="text/javascript">
+    var speedtests = document.getElementById('speedtests');
+    var avg_ping = document.getElementById('avg-ping');
+    var avg_down = document.getElementById('avg-down');
+    var avg_up = document.getElementById('avg-up');
+    var runButton = document.getElementById('run-speedtest');
+
+    function getData() {
+      var registry_xhttp = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+      registry_xhttp.onreadystatechange = function(data) {
+        if (this.readyState == 4 && this.status == 200) {
+          var data = JSON.parse(this.response);
+          avg_ping.innerText = data.avg_ping + " ms";
+          avg_down.innerText = data.avg_down + " Mbps";
+          avg_up.innerText = data.avg_up + " Mbps";
+
+          speedtests.innerHTML = "<tr><th>Ping</th><th>Download</th><th>Upload</th><th>Timestamp</th></tr>";
+
+          for (var i = 0; i < data.speedtests.length; i++) {
+            var speedtest = data.speedtests[i];
+
+            var wrapper = document.createElement('tr');
+            wrapper.className = 'speedtest';
+
+            var ping = document.createElement('td');
+            ping.className = 'speedtest-ping';
+            ping.innerText = speedtest.ping.latency + " ms";
+            wrapper.appendChild(ping);
+
+            var down = document.createElement('td');
+            down.className = 'speedtest-down';
+            down.innerText = speedtest.download.mbps + " Mbps";
+            wrapper.appendChild(down);
+
+            var up = document.createElement('td');
+            up.className = 'speedtest-up';
+            up.innerText = speedtest.upload.mbps + " Mbps";
+            wrapper.appendChild(up);
+
+            var time = document.createElement('td');
+            time.className = 'speedtest-time';
+            time.innerText = speedtest.timestamp.replace('T', ' ').replace('Z', '');
+            wrapper.appendChild(time);
+
+            speedtests.appendChild(wrapper);
+          }
+
+        } else if (this.readyState == 4) {
+          console.log(this);
+          speedtests.innerText = "ERROR";
+          avg_ping.innerText = "ERROR";
+          avg_down.innerText = "ERROR";
+          avg_up.innerText = "ERROR";
+        }
+      };
+      registry_xhttp.open("get", "get-data", true);
+      registry_xhttp.send();
+    }
+
+    function runSpeedtest() {
+      runButton.innerText = "Running...";
+      var registry_xhttp = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+      registry_xhttp.onreadystatechange = function(data) {
+        if (this.readyState == 4 && this.status == 200) {
+          var data = JSON.parse(this.response);
+          if (data.state == 200) {
+            runButton.innerText = "Run speedtest";
+            getData();
+          } else {
+            runButton.innerText = "Run speedtest (failed)";
+          }
+        }
+      };
+      registry_xhttp.open("get", "run-speedtest", true);
+      registry_xhttp.send();
+    }
+
+    runButton.addEventListener('click', runSpeedtest, false);
+
+    getData();
+
+    setInterval(getData, 60000);
+
+    </script>
+  </body>
+</html>

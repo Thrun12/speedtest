@@ -4,7 +4,7 @@
   "bin": "app.js",
   "scripts": {
     "install": "bash speedtest-cli-setup.sh",
-    "start": "node app.js && bash run-speedtest.sh"
+    "start": "bash run-speedtest.sh && node app.js"
   },
   "repository": {
     "type": "git",

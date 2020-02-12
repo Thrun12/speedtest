@@ -122,7 +122,7 @@
 
             var time = document.createElement('td');
             time.className = 'speedtest-time';
-            time.innerText = speedtest.timestamp.replace('T', ' ').replace('Z', '');
+            time.innerText = speedtest.real_timestamp.replace('_', ' ');
             wrapper.appendChild(time);
 
             speedtests.appendChild(wrapper);

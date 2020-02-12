@@ -22,6 +22,7 @@ print(str(data['download']['mbps']) + "Mbps / " + str(data['upload']['mbps']) + 
 now = datetime.now()
 date_time = now.strftime("%m-%d-%Y_%H:%M:%S")
 file_name = "speedtests/speedtest-" + date_time + ".json"
+data['real_timestamp'] = date_time
 
 # write result to file
 file = open(file_name, "w+")

@@ -1,5 +1,5 @@
 # Simplified speedtest
-This uses speedtest.net to store speedtests and easily set it up for you.
+This uses https://www.speedtest.net/ CLI service to store speedtests and easily set it up to run every hour.
 
 ## Web interface setup
 This Simplified speedtest also comes with a web service to get a better overview over the data.
